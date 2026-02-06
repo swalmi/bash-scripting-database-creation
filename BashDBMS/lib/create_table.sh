@@ -31,13 +31,13 @@ do
     if [[ $pk_set -eq 0 ]]; then
         read -p "Is this column Primary Key? (y/n): " is_pk
         if [[ $is_pk == "y" || $is_pk == "Y" ]]; then
-            schema+="$col_name:$col_type:PK|"
+            schema+="$col_name:$col_type:PK"$'\n'
             pk_set=1
             continue
         fi
     fi
 
-    schema+="$col_name:$col_type|"
+    schema+="$col_name:$col_type"$'\n'
 done
 
 if [[ $pk_set -eq 0 ]]; then
