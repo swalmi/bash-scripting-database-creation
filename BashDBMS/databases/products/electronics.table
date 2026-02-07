@@ -1,1 +1,3 @@
-id:int:PK|name:string|price:int
+id:int:PK
+name:string
+price:int

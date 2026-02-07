@@ -1,6 +1,13 @@
 #!/bin/bash
 
+source ./lib/validation.sh
+
 read -p "Enter Table Name: " table_name
+
+if ! is_valid_name "$table_name"; then
+    echo "Invalid table name."
+    return
+fi
 
 table_file="$CURRENT_DB/$table_name.table"
 
@@ -17,6 +24,12 @@ pk_set=0
 for (( i=1; i<=col_num; i++ ))
 do
     read -p "Enter column $i name: " col_name
+
+    if ! is_valid_name "$col_name"; then
+    echo "Invalid column name."
+    ((i--))
+    continue
+    fi
 
     while true
     do
@@ -44,9 +57,6 @@ if [[ $pk_set -eq 0 ]]; then
     echo "You must select a Primary Key!"
     return
 fi
-
-# Remove last |
-schema=${schema%|}
 
 echo "$schema" > "$table_file"
 

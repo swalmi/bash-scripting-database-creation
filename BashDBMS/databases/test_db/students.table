@@ -1,1 +1,3 @@
-id:int:PK|name:string|grade:int
+id:int:PK
+name:string
+grade:int

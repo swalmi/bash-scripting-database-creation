@@ -22,8 +22,8 @@ i=1
 for table in "${tables[@]}"
 do
     table_name=$(basename "$table" .table)
-    schema=$(head -n 1 "$table")
-    col_count=$(echo "$schema" | awk -F'|' '{print NF}')
+
+    col_count=$(grep -cv '^$' "$table")
 
     printf "%-3s| %-20s | %-7s\n" "$i" "$table_name" "$col_count"
     ((i++))
