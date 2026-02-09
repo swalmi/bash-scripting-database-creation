@@ -1,14 +1,17 @@
 #!/bin/bash
 
-read -p "Enter Database Name: " db_name
+db_name=$(zenity --entry \
+    --title="Connect Database" \
+    --text="Enter Database Name:")
+
+[[ -z "$db_name" ]] && return
 
 if [[ -d "./databases/$db_name" ]]; then
     export CURRENT_DB="./databases/$db_name"
-    echo "Connected to $db_name"
+    zenity --info --text="Connected to $db_name"
 
     source ./lib/table_menu.sh
-    table_menu    
+    table_menu
 else
-    echo "Database not found."
+    zenity --error --text="Database not found."
 fi
-

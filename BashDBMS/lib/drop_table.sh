@@ -1,26 +1,24 @@
 #!/bin/bash
 
-if [[ ! -d "$CURRENT_DB" ]]; then
-    echo "No database selected."
-    return
-fi
+[[ ! -d "$CURRENT_DB" ]] && zenity --error --text="No database selected." && return
 
-source ./lib/list_tables.sh
+tables=()
+for table in "$CURRENT_DB"/*.table; do
+    [[ -f "$table" ]] || continue
+    tables+=("$(basename "$table" .table)")
+done
 
-read -p "Enter table name to drop: " table_name
+[[ ${#tables[@]} -eq 0 ]] && zenity --info --text="No tables to delete." && return
 
-table_file="$CURRENT_DB/$table_name.table"
+table_name=$(zenity --list \
+    --title="Drop Table" \
+    --column="Choose Table" \
+    "${tables[@]}")
 
-if [[ ! -f "$table_file" ]]; then
-    echo "Table not found."
-    return
-fi
+[[ -z "$table_name" ]] && return
 
-read -p "Are you sure you want to delete table '$table_name'? (y/n): " confirm
-
-if [[ $confirm == "y" || $confirm == "Y" ]]; then
-    rm "$table_file"
-    echo "Table '$table_name' deleted successfully."
-else
-    echo "Operation cancelled."
+zenity --question --text="Are you sure you want to delete '$table_name'?"
+if [[ $? -eq 0 ]]; then
+    rm "$CURRENT_DB/$table_name.table"
+    zenity --info --text="Table '$table_name' deleted successfully."
 fi

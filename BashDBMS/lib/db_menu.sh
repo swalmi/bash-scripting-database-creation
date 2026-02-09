@@ -3,21 +3,21 @@
 function db_menu() {
     while true
     do
-        echo "========== DBMS =========="
-        echo "1) Create Database"
-        echo "2) List Databases"
-        echo "3) Connect To Database"
-        echo "4) Drop Database"
-        echo "5) Exit"
-        read -p "Choose option: " choice
+        choice=$(zenity --list \
+            --title="Bash DBMS" \
+            --column="Choose Option" \
+            "Create Database" \
+            "List Databases" \
+            "Connect To Database" \
+            "Drop Database" \
+            "Exit")
 
-        case $choice in
-            1) source ./lib/create_db.sh ;;
-            2) source ./lib/list_db.sh ;;
-            3) source ./lib/connect_db.sh ;;
-            4) source ./lib/drop_db.sh ;;
-            5) exit ;;
-            *) echo "Invalid choice" ;;
+        case "$choice" in
+            "Create Database") source ./lib/create_db.sh ;;
+            "List Databases") source ./lib/list_db.sh ;;
+            "Connect To Database") source ./lib/connect_db.sh ;;
+            "Drop Database") source ./lib/drop_db.sh ;;
+            "Exit"|"" ) exit ;;
         esac
     done
 }

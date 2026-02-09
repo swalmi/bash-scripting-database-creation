@@ -1,33 +1,23 @@
 #!/bin/bash
 
-if [[ ! -d "$CURRENT_DB" ]]; then
-    echo "No database selected."
-    return
-fi
+[[ ! -d "$CURRENT_DB" ]] && zenity --error --text="No database selected." && return
 
-tables=("$CURRENT_DB"/*.table)
+list=()
 
-if [[ ${#tables[@]} -eq 0 ]]; then
-    echo "No tables available."
-    return
-fi
-
-echo
-echo "Available Tables"
-echo "---------------------------------------"
-printf "%-3s| %-20s | %-7s\n" "No" "Table Name" "Columns"
-echo "---------------------------------------"
-
-i=1
-for table in "${tables[@]}"
-do
+for table in "$CURRENT_DB"/*.table; do
+    [[ -f "$table" ]] || continue
     table_name=$(basename "$table" .table)
-
     col_count=$(grep -cv '^$' "$table")
-
-    printf "%-3s| %-20s | %-7s\n" "$i" "$table_name" "$col_count"
-    ((i++))
+    list+=("$table_name" "$col_count")
 done
 
-echo "---------------------------------------"
-echo
+if [[ ${#list[@]} -eq 0 ]]; then
+    zenity --info --text="No tables available."
+    return
+fi
+
+zenity --list \
+    --title="Tables" \
+    --column="Table Name" \
+    --column="Columns" \
+    "${list[@]}"

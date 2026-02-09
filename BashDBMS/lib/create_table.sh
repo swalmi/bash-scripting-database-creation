@@ -1,49 +1,57 @@
 #!/bin/bash
-
 source ./lib/validation.sh
 
-read -p "Enter Table Name: " table_name
+table_name=$(zenity --entry \
+    --title="Create Table" \
+    --text="Enter Table Name:")
+
+[[ -z "$table_name" ]] && return
 
 if ! is_valid_name "$table_name"; then
-    echo "Invalid table name."
+    zenity --error --text="Invalid table name."
     return
 fi
 
 table_file="$CURRENT_DB/$table_name.table"
 
-if [[ -f $table_file ]]; then
-    echo "Table already exists!"
+if [[ -f "$table_file" ]]; then
+    zenity --error --text="Table already exists!"
     return
 fi
 
-read -p "Enter number of columns: " col_num
+col_num=$(zenity --entry \
+    --title="Create Table" \
+    --text="Enter number of columns:")
+
+[[ -z "$col_num" || ! "$col_num" =~ ^[0-9]+$ ]] && return
 
 schema=""
 pk_set=0
 
 for (( i=1; i<=col_num; i++ ))
 do
-    read -p "Enter column $i name: " col_name
+    col_name=$(zenity --entry \
+        --title="Column $i" \
+        --text="Enter column name:")
+
+    [[ -z "$col_name" ]] && ((i--)) && continue
 
     if ! is_valid_name "$col_name"; then
-    echo "Invalid column name."
-    ((i--))
-    continue
+        zenity --error --text="Invalid column name."
+        ((i--))
+        continue
     fi
 
-    while true
-    do
-        read -p "Enter datatype for $col_name (int/string): " col_type
-        if [[ $col_type == "int" || $col_type == "string" ]]; then
-            break
-        else
-            echo "Invalid datatype. Choose int or string."
-        fi
-    done
+    col_type=$(zenity --list \
+        --title="Datatype" \
+        --column="Choose datatype" \
+        "int" "string")
+
+    [[ -z "$col_type" ]] && ((i--)) && continue
 
     if [[ $pk_set -eq 0 ]]; then
-        read -p "Is this column Primary Key? (y/n): " is_pk
-        if [[ $is_pk == "y" || $is_pk == "Y" ]]; then
+        zenity --question --text="Make '$col_name' Primary Key?"
+        if [[ $? -eq 0 ]]; then
             schema+="$col_name:$col_type:PK"$'\n'
             pk_set=1
             continue
@@ -54,10 +62,9 @@ do
 done
 
 if [[ $pk_set -eq 0 ]]; then
-    echo "You must select a Primary Key!"
+    zenity --error --text="You must select a Primary Key!"
     return
 fi
 
 echo "$schema" > "$table_file"
-
-echo "Table '$table_name' created successfully."
+zenity --info --text="Table '$table_name' created successfully."

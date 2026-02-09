@@ -1,22 +1,19 @@
 #!/bin/bash
 
 DB_DIR="./databases"
+list=()
 
-echo
-echo "Available Databases"
-echo "--------------------"
-
-i=1
 for db in "$DB_DIR"/*; do
-    if [[ -d "$db" ]]; then
-        db_name=$(basename "$db")
-        echo "$i) $db_name"
-        ((i++))
-    fi
+    [[ -d "$db" ]] || continue
+    list+=("$(basename "$db")")
 done
 
-if [[ $i -eq 1 ]]; then
-    echo "No databases found."
+if [[ ${#list[@]} -eq 0 ]]; then
+    zenity --info --text="No databases found."
+    return
 fi
 
-echo
+zenity --list \
+    --title="Available Databases" \
+    --column="Database Name" \
+    "${list[@]}"

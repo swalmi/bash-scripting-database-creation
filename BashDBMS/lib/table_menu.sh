@@ -3,27 +3,27 @@
 function table_menu() {
     while true
     do
-        echo "====== Table Menu ======"
-        echo "1) Create Table"
-        echo "2) List Tables"
-        echo "3) Drop Table"
-        echo "4) Insert Into Table"
-        echo "5) Select From Table"
-        echo "6) Delete From Table"
-        echo "7) Update Table"
-        echo "8) Back"
-        read -p "Choose option: " choice
+        choice=$(zenity --list \
+            --title="Table Menu" \
+            --column="Choose Option" \
+            "Create Table" \
+            "List Tables" \
+            "Drop Table" \
+            "Insert Into Table" \
+            "Select From Table" \
+            "Delete From Table" \
+            "Update Table" \
+            "Back")
 
-        case $choice in
-            1) source ./lib/create_table.sh ;;
-            2) source ./lib/list_tables.sh ;;
-            3) source ./lib/drop_table.sh ;;
-            4) source ./lib/insert_row.sh ;;
-            5) source ./lib/select_row.sh ;;
-            6) source ./lib/delete_row.sh ;;
-            7) source ./lib/update_row.sh ;;
-            8) break ;;
-            *) echo "Invalid choice" ;;
+        case "$choice" in
+            "Create Table") source ./lib/create_table.sh ;;
+            "List Tables") source ./lib/list_tables.sh ;;
+            "Drop Table") source ./lib/drop_table.sh ;;
+            "Insert Into Table") source ./lib/insert_row.sh ;;
+            "Select From Table") source ./lib/select_row.sh ;;
+            "Delete From Table") source ./lib/delete_row.sh ;;
+            "Update Table") source ./lib/update_row.sh ;;
+            "Back"|"" ) break ;;
         esac
     done
 }
